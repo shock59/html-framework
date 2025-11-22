@@ -10,6 +10,7 @@ type Tag = {
   name: string;
   attributes: TagAttribute[];
   children: (Tag | string)[];
+  closed: boolean;
 };
 
 function parseAttributes(tag: string) {
@@ -123,7 +124,21 @@ function parse(html: string) {
       // Find the closing tag
       while (true) {
         index++;
-        if (index == html.length) return [];
+        if (index == html.length) {
+          parsed.push({
+            name: tagName,
+            attributes: tagAttributes,
+            children: parse(
+              html.substring(
+                openingTagIndex + tagInsideBrackets.length + 2,
+                html.length
+              )
+            ),
+            closed: false,
+          });
+
+          return parsed;
+        }
         if (
           html.substring(index, index + tagName.length + 3) == `</${tagName}>`
         )
@@ -140,6 +155,7 @@ function parse(html: string) {
             closingTagIndex
           )
         ),
+        closed: true,
       });
 
       index += tagName.length + 3;
