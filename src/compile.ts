@@ -8,8 +8,91 @@ type TagAttribute = {
 
 type Tag = {
   name: string;
+  attributes: TagAttribute[];
   children: (Tag | string)[];
 };
+
+function parseAttributes(tag: string) {
+  const name = tag.split(" ", 1)[0] ?? "";
+
+  if (name.length == tag.length)
+    return {
+      name,
+      attributes: [],
+    };
+
+  const attributesString = tag.substring(name.length, tag.length).trim();
+
+  let attributes: TagAttribute[] = [];
+
+  let currentAttributeNameIndex = 0;
+  let index = 0;
+
+  while (true) {
+    if (index >= attributesString.length) break;
+
+    if (attributesString[index] == "=") {
+      const attributeName = attributesString.substring(
+        currentAttributeNameIndex,
+        index
+      );
+
+      index++;
+      let attributeValueIndex = index + 1;
+      const quoteType = attributesString[index];
+      while (true) {
+        index++;
+        if (index == attributesString.length)
+          return {
+            name,
+            attributes: [],
+          };
+        if (attributesString[index] == quoteType) break;
+      }
+      const attributeValue = attributesString.substring(
+        attributeValueIndex,
+        index
+      );
+
+      attributes.push({
+        name: attributeName,
+        value: attributeValue,
+      });
+
+      while (true) {
+        index++;
+        if (index == attributesString.length || attributesString[index] != " ")
+          break;
+      }
+
+      currentAttributeNameIndex = index;
+      continue;
+    }
+
+    if (attributesString[index] == " ") {
+      const attributeName = attributesString.substring(
+        currentAttributeNameIndex,
+        index
+      );
+      attributes.push({
+        name: attributeName,
+      });
+
+      while (true) {
+        index++;
+        if (index == attributesString.length || attributesString[index] != " ")
+          break;
+      }
+      continue;
+    }
+
+    index++;
+  }
+  return {
+    name,
+    attributes,
+  };
+}
 
 function parse(html: string) {
   let parsed: (Tag | string)[] = [];
@@ -17,7 +100,6 @@ function parse(html: string) {
   let currentTextStartingIndex = 0;
   let index = 0;
   while (true) {
-
     if (index == html.length) break;
 
     if (html[index] == "<") {
@@ -33,7 +115,10 @@ function parse(html: string) {
         if (index == html.length) return [];
         if (html[index] == ">") break;
       }
-      const tagName = html.substring(openingTagIndex + 1, index);
+      const tagInsideBrackets = html.substring(openingTagIndex + 1, index);
+
+      const { name: tagName, attributes: tagAttributes } =
+        parseAttributes(tagInsideBrackets);
 
       // Find the closing tag
       while (true) {
@@ -48,8 +133,12 @@ function parse(html: string) {
 
       parsed.push({
         name: tagName,
+        attributes: tagAttributes,
         children: parse(
-          html.substring(openingTagIndex + tagName.length + 2, closingTagIndex)
+          html.substring(
+            openingTagIndex + tagInsideBrackets.length + 2,
+            closingTagIndex
+          )
         ),
       });
 
@@ -76,5 +165,5 @@ for (const file of files) {
   const fileContent = await readFile(path.join(inputDir, file), {
     encoding: "utf-8",
   });
-  console.log(parse(fileContent));
+  console.log(JSON.stringify(parse(fileContent)));
 }
