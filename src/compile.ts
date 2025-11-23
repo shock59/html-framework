@@ -362,16 +362,15 @@ async function getFiles(dir: string) {
   return parsed;
 }
 
-const inputDir = "input";
-const outputDir = "output";
+export default async function compile(inputDir: string, outputDir: string) {
+  const parsed = await getFiles(inputDir);
 
-const parsed = await getFiles(inputDir);
-
-for (const file of Object.keys(parsed)) {
-  if (file.split("/")[0] == "components") continue;
-  const newParsed = handleImportTags(parsed[file]!, parsed, [file]);
-  const built = build(newParsed);
-  const outputPath = path.join(outputDir, file);
-  await mkdir(path.dirname(outputPath), { recursive: true });
-  await writeFile(outputPath, built);
+  for (const file of Object.keys(parsed)) {
+    if (file.split("/")[0] == "components") continue;
+    const newParsed = handleImportTags(parsed[file]!, parsed, [file]);
+    const built = build(newParsed);
+    const outputPath = path.join(outputDir, file);
+    await mkdir(path.dirname(outputPath), { recursive: true });
+    await writeFile(outputPath, built);
+  }
 }
