@@ -14,6 +14,8 @@ type Tag = {
   closed: boolean;
 };
 
+type Parsed = (Tag | string)[];
+
 const voidTags = [
   "area",
   "base",
@@ -33,6 +35,29 @@ const voidTags = [
 
 function isTag(input: unknown): input is Tag {
   return (input as Tag).name != undefined;
+}
+
+function handleImportTags(parsed: Parsed, allFiles: Record<string, Parsed>) {
+  for (const [index, element] of parsed.entries()) {
+    if (!isTag(element)) continue;
+    if (element.name == "import") {
+      const src = element.attributes.find(
+        (attribute) => attribute.name == "src" && attribute.value != undefined
+      );
+      if (!src) continue;
+      const imported = allFiles[src.value!];
+      if (!imported) continue;
+      parsed = [
+        ...parsed.slice(0, index),
+        ...imported,
+        ...parsed.slice(index + 1, parsed.length),
+      ];
+    } else {
+      element.children = handleImportTags(element.children, allFiles);
+    }
+  }
+
+  return parsed;
 }
 
 function parseAttributes(tag: string) {
@@ -118,12 +143,12 @@ function parseAttributes(tag: string) {
 
   return {
     name,
-    attributes: attributes.filter(attribute => attribute.name != ""),
+    attributes: attributes.filter((attribute) => attribute.name != ""),
   };
 }
 
 function parse(html: string) {
-  let parsed: (Tag | string)[] = [];
+  let parsed: Parsed = [];
 
   let currentTextStartingIndex = 0;
   let index = 0;
@@ -232,7 +257,7 @@ function parse(html: string) {
   return parsed;
 }
 
-function build(parsed: (Tag | string)[]) {
+function build(parsed: Parsed) {
   let html = "";
 
   for (const element of parsed) {
@@ -265,13 +290,18 @@ function build(parsed: (Tag | string)[]) {
 const inputDir = "input";
 const outputDir = "output";
 
+let parsed: Record<string, Parsed> = {};
+
 const files = await readdir(inputDir);
 for (const file of files) {
   const fileContent = await readFile(path.join(inputDir, file), {
     encoding: "utf-8",
   });
-  const parsed = parse(fileContent);
-  const newHtml = build(parsed);
-  await writeFile(path.join(outputDir, `${file}.json`), JSON.stringify(parsed));
-  await writeFile(path.join(outputDir, file), newHtml);
+  parsed[file] = parse(fileContent);
+}
+
+for (const file of files) {
+  parsed[file] = handleImportTags(parsed[file]!, parsed);
+  const built = build(parsed[file]);
+  await writeFile(path.join(outputDir, file), built);
 }
