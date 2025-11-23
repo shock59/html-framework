@@ -37,7 +37,11 @@ function isTag(input: unknown): input is Tag {
   return (input as Tag).name != undefined;
 }
 
-function handleImportTags(parsed: Parsed, allFiles: Record<string, Parsed>) {
+function handleImportTags(
+  parsed: Parsed,
+  allFiles: Record<string, Parsed>,
+  alreadyImported: string[]
+) {
   for (const [index, element] of parsed.entries()) {
     if (!isTag(element)) continue;
     if (element.name == "import") {
@@ -45,15 +49,25 @@ function handleImportTags(parsed: Parsed, allFiles: Record<string, Parsed>) {
         (attribute) => attribute.name == "src" && attribute.value != undefined
       );
       if (!src) continue;
-      const imported = allFiles[src.value!];
+      const value = src.value!;
+      if (alreadyImported.includes(value)) {
+        continue;
+      }
+
+      const imported = allFiles[value];
       if (!imported) continue;
+      alreadyImported.push(value);
       parsed = [
         ...parsed.slice(0, index),
-        ...handleImportTags(imported, allFiles),
+        ...handleImportTags(imported, allFiles, alreadyImported),
         ...parsed.slice(index + 1, parsed.length),
       ];
     } else {
-      element.children = handleImportTags(element.children, allFiles);
+      element.children = handleImportTags(
+        element.children,
+        allFiles,
+        alreadyImported
+      );
     }
   }
 
@@ -303,7 +317,7 @@ for (const file of files) {
 }
 
 for (const file of files) {
-  parsed[file] = handleImportTags(parsed[file]!, parsed);
-  const built = build(parsed[file]);
+  const newParsed = handleImportTags(parsed[file]!, parsed, [file]);
+  const built = build(newParsed);
   await writeFile(path.join(outputDir, file), built);
 }
