@@ -56,10 +56,9 @@ function handleImportTags(
 
       const imported = allFiles[value];
       if (!imported) continue;
-      alreadyImported.push(value);
       parsed = [
         ...parsed.slice(0, index),
-        ...handleImportTags(imported, allFiles, alreadyImported),
+        ...handleImportTags(imported, allFiles, [...alreadyImported, value]),
         ...parsed.slice(index + 1, parsed.length),
       ];
     } else {
