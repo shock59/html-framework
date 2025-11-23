@@ -170,15 +170,12 @@ function parse(html: string) {
         parsed.push({
           name: tagName,
           attributes: tagAttributes,
-          children: parse(
-            html.substring(
-              openingTagIndex + tagInsideBrackets.length + 2,
-              html.length
-            )
-          ),
+          children: [],
           closed: true,
         });
 
+        index++;
+        currentTextStartingIndex = index;
         continue;
       }
 
