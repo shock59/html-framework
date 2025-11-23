@@ -189,7 +189,8 @@ function parse(html: string) {
           closed: true,
         });
 
-        return parsed;
+        currentTextStartingIndex = index;
+        continue;
       }
 
       if (voidTags.includes(tagName.toLowerCase())) {
