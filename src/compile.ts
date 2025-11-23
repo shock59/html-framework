@@ -1,4 +1,4 @@
-import { readdir, readFile, writeFile } from "node:fs/promises";
+import { lstat, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 type TagAttribute = {
@@ -303,21 +303,41 @@ function build(parsed: Parsed) {
   return html;
 }
 
+async function getFiles(dir: string) {
+  let parsed: Record<string, Parsed> = {};
+  const files = await readdir(dir);
+
+  for (const file of files) {
+    const fullFilePath = path.join(dir, file);
+
+    if ((await lstat(fullFilePath)).isDirectory()) {
+      console.log(fullFilePath);
+      const newFiles = await getFiles(fullFilePath);
+      for (const filename of Object.keys(newFiles)) {
+        parsed[path.join(file, filename)] = newFiles[filename]!;
+      }
+      continue;
+    }
+
+    const fileContent = await readFile(path.join(dir, file), {
+      encoding: "utf-8",
+    });
+    parsed[file] = parse(fileContent);
+  }
+
+  return parsed;
+}
+
 const inputDir = "input";
 const outputDir = "output";
 
-let parsed: Record<string, Parsed> = {};
+const parsed = await getFiles(inputDir);
 
-const files = await readdir(inputDir);
-for (const file of files) {
-  const fileContent = await readFile(path.join(inputDir, file), {
-    encoding: "utf-8",
-  });
-  parsed[file] = parse(fileContent);
-}
-
-for (const file of files) {
+for (const file of Object.keys(parsed)) {
+  if (file.split("/")[0] == "components") continue;
   const newParsed = handleImportTags(parsed[file]!, parsed, [file]);
   const built = build(newParsed);
-  await writeFile(path.join(outputDir, file), built);
+  const outputPath = path.join(outputDir, file);
+  await mkdir(path.dirname(outputPath), { recursive: true });
+  await writeFile(outputPath, built);
 }
