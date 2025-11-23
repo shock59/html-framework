@@ -4,6 +4,7 @@ import path from "node:path";
 type TagAttribute = {
   name: string;
   value?: string;
+  quoteType?: string
 };
 
 type Tag = {
@@ -40,14 +41,18 @@ function parseAttributes(tag: string) {
 
       index++;
       let attributeValueIndex = index + 1;
-      const quoteType = attributesString[index];
+      let quoteType;
+      if (["'", '"'].includes(attributesString[index]!))
+        quoteType = attributesString[index];
+      else {
+        quoteType = " ";
+        attributeValueIndex--;
+        index--;
+      }
+
       while (true) {
         index++;
-        if (index == attributesString.length)
-          return {
-            name,
-            attributes: [],
-          };
+        if (index == attributesString.length) break;
         if (attributesString[index] == quoteType) break;
       }
       const attributeValue = attributesString.substring(
@@ -58,6 +63,7 @@ function parseAttributes(tag: string) {
       attributes.push({
         name: attributeName,
         value: attributeValue,
+        quoteType: quoteType!,
       });
 
       while (true) {
