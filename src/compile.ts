@@ -1,4 +1,4 @@
-import { readdir, readFile } from "node:fs/promises";
+import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 type TagAttribute = {
@@ -30,6 +30,10 @@ const voidTags = [
   "track",
   "wbr",
 ];
+
+function isTag(input: unknown): input is Tag {
+  return (input as Tag).name != undefined;
+}
 
 function parseAttributes(tag: string) {
   const name = tag.split(" ", 1)[0] ?? "";
@@ -230,13 +234,46 @@ function parse(html: string) {
   return parsed;
 }
 
+function build(parsed: (Tag | string)[]) {
+  let html = "";
+
+  for (const element of parsed) {
+    if (isTag(element)) {
+      html += `<${element.name}`;
+      if (element.attributes.length) {
+        html += " ";
+        for (const [index, attribute] of element.attributes.entries()) {
+          html += attribute.name;
+          if (attribute.value) {
+            const quote = attribute.quoteType == " " ? "" : attribute.quoteType;
+            html += `=${quote}${attribute.value}${quote}`;
+            if (index != element.attributes.length - 1) html += " ";
+          }
+        }
+      }
+      html += ">";
+      if (element.children.length) {
+        html += build(element.children);
+      }
+      if (!voidTags.includes(element.name.toLowerCase()) && element.closed) {
+        html += `</${element.name}>`;
+      }
+    } else html += element;
+  }
+
+  return html;
+}
+
 const inputDir = "input";
+const outputDir = "output";
 
 const files = await readdir(inputDir);
 for (const file of files) {
-  console.log(file);
   const fileContent = await readFile(path.join(inputDir, file), {
     encoding: "utf-8",
   });
-  console.log(JSON.stringify(parse(fileContent)));
+  const parsed = parse(fileContent);
+  const newHtml = build(parsed);
+  await writeFile(path.join(outputDir, `${file}.json`), JSON.stringify(parsed));
+  await writeFile(path.join(outputDir, file), newHtml);
 }
