@@ -31,7 +31,23 @@ function parseAttributes(tag: string) {
   let index = 0;
 
   while (true) {
-    if (index >= attributesString.length) break;
+    if (index >= attributesString.length || attributesString[index] == " ") {
+      const attributeName = attributesString.substring(
+        currentAttributeNameIndex,
+        index
+      );
+      attributes.push({
+        name: attributeName,
+      });
+
+      while (true) {
+        index++;
+        if (index == attributesString.length || attributesString[index] != " ")
+          break;
+      }
+      
+      break;
+    }
 
     if (attributesString[index] == "=") {
       const attributeName = attributesString.substring(
@@ -73,23 +89,6 @@ function parseAttributes(tag: string) {
       }
 
       currentAttributeNameIndex = index;
-      continue;
-    }
-
-    if (attributesString[index] == " ") {
-      const attributeName = attributesString.substring(
-        currentAttributeNameIndex,
-        index
-      );
-      attributes.push({
-        name: attributeName,
-      });
-
-      while (true) {
-        index++;
-        if (index == attributesString.length || attributesString[index] != " ")
-          break;
-      }
       continue;
     }
 
