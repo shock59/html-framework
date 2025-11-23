@@ -46,8 +46,6 @@ function updateContents(
   for (const [index, element] of imported.entries()) {
     if (!isTag(element)) continue;
     if (element.name == "contents") {
-      console.log(imported);
-
       imported = [
         ...imported.slice(0, index),
         ...handleImportTags(newContents, allFiles, [...alreadyImported]),
@@ -345,7 +343,6 @@ async function getFiles(dir: string) {
     const fullFilePath = path.join(dir, file);
 
     if ((await lstat(fullFilePath)).isDirectory()) {
-      console.log(fullFilePath);
       const newFiles = await getFiles(fullFilePath);
       for (const filename of Object.keys(newFiles)) {
         parsed[path.join(file, filename)] = newFiles[filename]!;
