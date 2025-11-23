@@ -49,7 +49,7 @@ function handleImportTags(parsed: Parsed, allFiles: Record<string, Parsed>) {
       if (!imported) continue;
       parsed = [
         ...parsed.slice(0, index),
-        ...imported,
+        ...handleImportTags(imported, allFiles),
         ...parsed.slice(index + 1, parsed.length),
       ];
     } else {
@@ -173,6 +173,7 @@ function parse(html: string) {
       const { name: tagName, attributes: tagAttributes } =
         parseAttributes(tagInsideBrackets);
 
+      // Self closing tags
       if (
         tagAttributes[tagAttributes.length - 1]?.name == "/" &&
         tagAttributes[tagAttributes.length - 1]?.quoteType == undefined
@@ -189,7 +190,7 @@ function parse(html: string) {
           closed: true,
         });
 
-        currentTextStartingIndex = index;
+        currentTextStartingIndex = index + 1;
         continue;
       }
 
