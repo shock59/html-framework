@@ -115,9 +115,10 @@ function parseAttributes(tag: string) {
 
     index++;
   }
+
   return {
     name,
-    attributes,
+    attributes: attributes.filter(attribute => attribute.name != ""),
   };
 }
 
