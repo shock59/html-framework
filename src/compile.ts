@@ -37,6 +37,35 @@ function isTag(input: unknown): input is Tag {
   return (input as Tag).name != undefined;
 }
 
+function updateContents(
+  imported: Parsed,
+  newContents: Parsed,
+  allFiles: Record<string, Parsed>,
+  alreadyImported: string[]
+) {
+  for (const [index, element] of imported.entries()) {
+    if (!isTag(element)) continue;
+    if (element.name == "contents") {
+      console.log(imported);
+
+      imported = [
+        ...imported.slice(0, index),
+        ...handleImportTags(newContents, allFiles, [...alreadyImported]),
+        ...imported.slice(index + 1, imported.length),
+      ];
+    } else {
+      element.children = updateContents(
+        element.children,
+        newContents,
+        allFiles,
+        alreadyImported
+      );
+    }
+  }
+
+  return imported;
+}
+
 function handleImportTags(
   parsed: Parsed,
   allFiles: Record<string, Parsed>,
@@ -54,8 +83,14 @@ function handleImportTags(
         continue;
       }
 
-      const imported = allFiles[value];
+      let imported = allFiles[value];
       if (!imported) continue;
+
+      imported = updateContents(imported, element.children, allFiles, [
+        ...alreadyImported,
+        value,
+      ]);
+
       parsed = [
         ...parsed.slice(0, index),
         ...handleImportTags(imported, allFiles, [...alreadyImported, value]),
