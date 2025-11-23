@@ -4,7 +4,7 @@ import path from "node:path";
 type TagAttribute = {
   name: string;
   value?: string;
-  quoteType?: string
+  quoteType?: string;
 };
 
 type Tag = {
@@ -45,7 +45,7 @@ function parseAttributes(tag: string) {
         if (index == attributesString.length || attributesString[index] != " ")
           break;
       }
-      
+
       break;
     }
 
@@ -125,6 +125,25 @@ function parse(html: string) {
 
       const { name: tagName, attributes: tagAttributes } =
         parseAttributes(tagInsideBrackets);
+
+      if (
+        tagAttributes[tagAttributes.length - 1]?.name == "/" &&
+        tagAttributes[tagAttributes.length - 1]?.quoteType == undefined
+      ) {
+        parsed.push({
+          name: tagName,
+          attributes: tagAttributes.slice(0, -1),
+          children: parse(
+            html.substring(
+              openingTagIndex + tagInsideBrackets.length + 2,
+              html.length
+            )
+          ),
+          closed: true,
+        });
+
+        return parsed;
+      }
 
       // Find the closing tag
       while (true) {
