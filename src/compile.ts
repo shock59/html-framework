@@ -14,6 +14,23 @@ type Tag = {
   closed: boolean;
 };
 
+const voidTags = [
+  "area",
+  "base",
+  "br",
+  "col",
+  "embed",
+  "hr",
+  "img",
+  "input",
+  "link",
+  "meta",
+  "param",
+  "source",
+  "track",
+  "wbr",
+];
+
 function parseAttributes(tag: string) {
   const name = tag.split(" ", 1)[0] ?? "";
 
@@ -143,6 +160,22 @@ function parse(html: string) {
         });
 
         return parsed;
+      }
+
+      if (voidTags.includes(tagName.toLowerCase())) {
+        parsed.push({
+          name: tagName,
+          attributes: tagAttributes,
+          children: parse(
+            html.substring(
+              openingTagIndex + tagInsideBrackets.length + 2,
+              html.length
+            )
+          ),
+          closed: true,
+        });
+
+        continue;
       }
 
       // Find the closing tag
