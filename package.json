@@ -3,6 +3,14 @@
   "description": "A simple \"framework\" to add additional functionality to HTML.",
   "version": "1.0.0",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shock59/html-framework.git"
+  },
+  "homepage": "https://github.com/shock59/html-framework#readme",
+  "bugs": {
+    "url": "https://github.com/shock59/html-framework/issues"
+  },
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsc"
