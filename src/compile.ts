@@ -75,8 +75,8 @@ function handleRelativeSrcs(
 ) {
   for (const [index, element] of parsed.entries()) {
     if (!isTag(element)) continue;
-    const attributeIndex = element.attributes.findIndex(
-      (attribute) => attribute.name
+    const attributeIndex = element.attributes.findIndex((attribute) =>
+      ["src", "href"].includes(attribute.name)
     );
 
     element.children = handleRelativeSrcs(
