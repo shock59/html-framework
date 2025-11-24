@@ -154,6 +154,7 @@ function handleImportTags(
         ]),
         ...parsed.slice(index + 1, parsed.length),
       ];
+      return handleImportTags(filename, parsed, allFiles, alreadyImported);
     } else {
       element.children = handleImportTags(
         filename,
@@ -213,6 +214,13 @@ async function handleEachTags(
         ...newElements,
         ...parsed.slice(index + 1, parsed.length),
       ];
+      return handleEachTags(
+        filename,
+        parsed,
+        allFiles,
+        alreadyImported,
+        inputDir
+      );
     } else {
       element.children = await handleEachTags(
         filename,
