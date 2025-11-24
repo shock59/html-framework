@@ -22,59 +22,44 @@
     code from another file. For example, this code:
   </p>
 
-  <p><div class="codeblock">
-    <pre>
+  <import src="components/codeblock.html">
 &lt;!-- components/navbar.html --&gt;
 &lt;nav&gt;
 &nbsp;&nbsp;&lt;a href=&quot;index.html&quot;&gt;Home&lt;/a&gt;
 &nbsp;&nbsp;&lt;a href=&quot;contact.html&quot;&gt;Contact&lt;/a&gt;
-&lt;/nav&gt;</pre
-    >
-  </div></p>
+&lt;/nav&gt;</import>
 
-  <p><div class="codeblock">
-    <pre>
+  <import src="components/codeblock.html">
 &lt;!-- index.html --&gt;
 &lt;import src=&quot;components/navbar.html&quot; /&gt;
 
-&lt;h1&gt;Home page&lt;/h1&gt;</pre
-    >
-  </div></p>
+&lt;h1&gt;Home page&lt;/h1&gt;</import>
 
-  <p><div class="codeblock">
-    <pre>
+  <import src="components/codeblock.html">
 &lt;!-- contact.html --&gt;
 &lt;import src=&quot;components/navbar.html&quot; /&gt;
 
-&lt;h1&gt;Contact page&lt;/h1&gt;</pre
-    >
-  </div></p>
+&lt;h1&gt;Contact page&lt;/h1&gt;</import>
 
   <p>Will compile to this:</p>
 
-  <p><div class="codeblock">
-    <pre>
+  <import src="components/codeblock.html">
 &lt;!-- index.html --&gt;
 &lt;nav&gt;
 &nbsp;&nbsp;&lt;a href=&quot;index.html&quot;&gt;Home&lt;/a&gt;
 &nbsp;&nbsp;&lt;a href=&quot;contact.html&quot;&gt;Contact&lt;/a&gt;
 &lt;/nav&gt;
 
-&lt;h1&gt;Home page&lt;/h1&gt;</pre
-    >
-  </div></p>
+&lt;h1&gt;Home page&lt;/h1&gt;</import>
 
-  <p><div class="codeblock">
-    <pre>
+  <import src="components/codeblock.html">
 &lt;!-- contact.html --&gt;
 &lt;nav&gt;
 &nbsp;&nbsp;&lt;a href=&quot;index.html&quot;&gt;Home&lt;/a&gt;
 &nbsp;&nbsp;&lt;a href=&quot;contact.html&quot;&gt;Contact&lt;/a&gt;
 &lt;/nav&gt;
 
-&lt;h1&gt;Contact page&lt;/h1&gt;</pre
-    >
-  </div></p>
+&lt;h1&gt;Contact page&lt;/h1&gt;</import>
 
   <p>
     Using imports allows you to stop repeating yourself in every HTML file.
@@ -82,7 +67,7 @@
     it can be used for page layouts, for example:
   </p>
 
-  <p><div class="codeblock">
+  <import src="components/codeblock.html">
     <pre>
 &lt;!-- components/layout.html --&gt;
 &lt;!DOCTYPE html&gt;
@@ -96,18 +81,13 @@
 &nbsp;&nbsp;&lt;contents&gt;
 
 &lt;/body&gt;
-&lt;/html&gt;</pre
-    >
-  </div></p>
+&lt;/html&gt;</import>
 
-  <p><div class="codeblock">
-    <pre>
+  <import src="components/codeblock.html">
 &lt;!-- page.html --&gt;
 &lt;import src=&quot;components/layout.html&quot;&gt;
 &nbsp;&nbsp;&lt;p&gt;Page content&lt;/p&gt;
-&lt;/import&gt;</pre
-    >
-  </div></p>
+&lt;/import&gt;</import>
 
   <br>
 
@@ -117,40 +97,29 @@
     posts and you want to display them all on one page:
   </p>
 
-  <p><div class="codeblock">
+  <import src="components/codeblock.html">
     <pre>
 &lt;!--- articles/article1.html ---&gt;
 &lt;h1&gt;First article&lt;/h1&gt;
-&lt;p&gt;First article content&lt;/p&gt;</pre
-    >
-  </div></p>
+&lt;p&gt;First article content&lt;/p&gt;</import>
 
-  <p><div class="codeblock">
-    <pre>
+  <import src="components/codeblock.html">
 &lt;!--- articles/article2.html ---&gt;
 &lt;h1&gt;Second article&lt;/h1&gt;
-&lt;p&gt;Second article content&lt;/p&gt;</pre
-    >
-  </div></p>
+&lt;p&gt;Second article content&lt;/p&gt;</import>
 
-  <p><div class="codeblock">
-    <pre>
+  <import src="components/codeblock.html">
 &lt;!--- blog.html ---&gt;
-&lt;each src="articles" /&gt;</pre
-    >
-  </div></p>
+&lt;each src="articles" /&gt;</import>
 
   <p>This will compile to:</p>
 
-    <p><div class="codeblock">
-    <pre>
+  <import src="components/codeblock.html">
 &lt;!--- blog.html ---&gt;
 &lt;h1&gt;First article&lt;/h1&gt;
 &lt;p&gt;First article content&lt;/p&gt;
 &lt;h1&gt;Second article&lt;/h1&gt;
-&lt;p&gt;Second article content&lt;/p&gt;</pre
-    >
-  </div></p>
+&lt;p&gt;Second article content&lt;/p&gt;</import>
 
   <br>
 
