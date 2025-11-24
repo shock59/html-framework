@@ -1,7 +1,6 @@
 {
   "scripts": {
-    "compile": "tsx src/doCompile.ts",
-    "server": "tsx src/server.ts"
+    "dev": "tsx src/index.ts"
   },
   "type": "module",
   "devDependencies": {
