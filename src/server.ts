@@ -9,11 +9,14 @@ const outputDir = "output";
 
 app.use(express.static(outputDir));
 
-watch(inputDir, { recursive: true }, function (evt, name) {
-  compile(inputDir, outputDir);
+watch(inputDir, { recursive: true }, async (evt, name) => {
+  console.log(`${name} updated, compiling...`);
+  await compile(inputDir, outputDir);
+  console.clear();
   console.log(`${name} updated, recompiled HTML`);
 });
 
 app.listen(port, () => {
+  console.clear();
   console.log(`Server running at http://127.0.0.1:${port}`);
 });
