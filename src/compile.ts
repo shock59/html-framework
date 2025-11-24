@@ -63,13 +63,23 @@ function updateContents(
         ...imported.slice(index + 1, imported.length),
       ];
     } else {
-      element.children = updateContents(
-        filename,
-        element.children,
-        newContents,
-        allFiles,
-        alreadyImported
-      );
+      imported = [
+        ...imported.slice(0, index),
+        {
+          name: element.name,
+          attributes: element.attributes,
+          children: updateContents(
+            filename,
+            element.children,
+            newContents,
+            { ...allFiles },
+            alreadyImported
+          ),
+          closed: element.closed,
+          opened: element.opened,
+        },
+        ...imported.slice(index + 1, imported.length),
+      ];
     }
   }
 
@@ -87,11 +97,21 @@ function handleRelativeSrcs(
       ["src", "href"].includes(attribute.name)
     );
 
-    element.children = handleRelativeSrcs(
-      originalFilename,
-      newFilename,
-      element.children
-    );
+    parsed = [
+      ...parsed.slice(0, index),
+      {
+        name: element.name,
+        attributes: element.attributes,
+        children: handleRelativeSrcs(
+          originalFilename,
+          newFilename,
+          element.children
+        ),
+        closed: element.closed,
+        opened: element.opened,
+      },
+      ...parsed.slice(index + 1, parsed.length),
+    ];
 
     if (attributeIndex == -1) continue;
 
@@ -134,7 +154,7 @@ function handleImportTags(
       if (alreadyImported.includes(importedPath)) {
         continue;
       }
-      let imported = allFiles[importedPath];
+      let imported = [...(allFiles[importedPath] ?? [])];
       if (!imported) continue;
 
       imported = updateContents(
@@ -146,22 +166,42 @@ function handleImportTags(
       );
       imported = handleRelativeSrcs(filename, importedPath, imported);
 
+      const newElements = handleImportTags(
+        importedPath,
+        imported,
+        { ...allFiles },
+        [...alreadyImported, importedPath]
+      );
+
       parsed = [
         ...parsed.slice(0, index),
-        ...handleImportTags(importedPath, imported, allFiles, [
-          ...alreadyImported,
-          importedPath,
-        ]),
+        ...newElements,
         ...parsed.slice(index + 1, parsed.length),
       ];
-      return handleImportTags(filename, parsed, allFiles, alreadyImported);
-    } else {
-      element.children = handleImportTags(
+
+      return handleImportTags(
         filename,
-        element.children,
-        allFiles,
+        parsed,
+        { ...allFiles },
         alreadyImported
       );
+    } else {
+      parsed = [
+        ...parsed.slice(0, index),
+        {
+          name: element.name,
+          attributes: element.attributes,
+          children: handleImportTags(
+            filename,
+            element.children,
+            { ...allFiles },
+            alreadyImported
+          ),
+          closed: element.closed,
+          opened: element.opened,
+        },
+        ...parsed.slice(index + 1, parsed.length),
+      ];
     }
   }
 
@@ -222,13 +262,23 @@ async function handleEachTags(
         inputDir
       );
     } else {
-      element.children = await handleEachTags(
-        filename,
-        element.children,
-        allFiles,
-        alreadyImported,
-        inputDir
-      );
+      parsed = [
+        ...parsed.slice(0, index),
+        {
+          name: element.name,
+          attributes: element.attributes,
+          children: await handleEachTags(
+            filename,
+            element.children,
+            allFiles,
+            alreadyImported,
+            inputDir
+          ),
+          closed: element.closed,
+          opened: element.opened,
+        },
+        ...parsed.slice(index + 1, parsed.length),
+      ];
     }
   }
 
@@ -531,6 +581,8 @@ export default async function compile(
 
   let builtCount = 0;
   for (const file of Object.keys(parsed)) {
+    // console.log(JSON.stringify(parsed["components/codeblock.html"]));
+
     if (file.split("/")[0] == "components") continue;
     let newParsed = handleImportTags(file, parsed[file]!, parsed, [file]);
     newParsed = await handleEachTags(file, newParsed, parsed, [file], inputDir);
