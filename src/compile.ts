@@ -18,6 +18,7 @@ type Tag = {
   name: string;
   attributes: TagAttribute[];
   children: (Tag | string)[];
+  opened: boolean;
   closed: boolean;
 };
 
@@ -336,6 +337,17 @@ function parse(html: string) {
       }
       const tagInsideBrackets = html.substring(openingTagIndex + 1, index);
 
+      // Closing tag without an opening tag
+      if (tagInsideBrackets[0] == "/") {
+        parsed.push({
+          name: tagInsideBrackets,
+          attributes: [],
+          children: [],
+          opened: false,
+          closed: true,
+        });
+      }
+
       const { name: tagName, attributes: tagAttributes } =
         parseAttributes(tagInsideBrackets);
 
@@ -353,6 +365,7 @@ function parse(html: string) {
               html.length
             )
           ),
+          opened: true,
           closed: true,
         });
 
@@ -365,6 +378,7 @@ function parse(html: string) {
           name: tagName,
           attributes: tagAttributes,
           children: [],
+          opened: true,
           closed: true,
         });
 
@@ -386,6 +400,7 @@ function parse(html: string) {
                 html.length
               )
             ),
+            opened: true,
             closed: false,
           });
 
@@ -407,6 +422,7 @@ function parse(html: string) {
             closingTagIndex
           )
         ),
+        opened: true,
         closed: true,
       });
 
@@ -430,21 +446,24 @@ function build(parsed: Parsed) {
 
   for (const element of parsed) {
     if (isTag(element)) {
-      html += `<${element.name}`;
-      if (element.attributes.length) {
-        html += " ";
-        for (const [index, attribute] of element.attributes.entries()) {
-          html += attribute.name;
-          if (attribute.value) {
-            const quote = attribute.quoteType == " " ? "" : attribute.quoteType;
-            html += `=${quote}${attribute.value}${quote}`;
-            if (index != element.attributes.length - 1) html += " ";
+      if (element.opened) {
+        html += `<${element.name}`;
+        if (element.attributes.length) {
+          html += " ";
+          for (const [index, attribute] of element.attributes.entries()) {
+            html += attribute.name;
+            if (attribute.value) {
+              const quote =
+                attribute.quoteType == " " ? "" : attribute.quoteType;
+              html += `=${quote}${attribute.value}${quote}`;
+              if (index != element.attributes.length - 1) html += " ";
+            }
           }
         }
-      }
-      html += ">";
-      if (element.children.length) {
-        html += build(element.children);
+        html += ">";
+        if (element.children.length) {
+          html += build(element.children);
+        }
       }
       if (!voidTags.includes(element.name.toLowerCase()) && element.closed) {
         html += `</${element.name}>`;
