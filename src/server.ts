@@ -4,7 +4,8 @@ import compile from "./compile.js";
 
 export default async function server(
   directories: { input: string; output: string },
-  port: number
+  port: number,
+  rm: boolean
 ) {
   const app = express();
 
@@ -12,13 +13,13 @@ export default async function server(
 
   watch(directories.input, { recursive: true }, async (evt, name) => {
     console.log(`${name} updated, compiling...`);
-    await compile(directories.input, directories.output);
+    await compile(directories.input, directories.output, rm);
     console.clear();
     console.log(`${name} updated, recompiled HTML`);
   });
 
   console.log(`Compiling to ${directories.output}`);
-  await compile(directories.input, directories.output);
+  await compile(directories.input, directories.output, rm);
 
   app.listen(port, () => {
     console.clear();

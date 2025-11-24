@@ -1,4 +1,11 @@
-import { lstat, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import {
+  lstat,
+  mkdir,
+  readdir,
+  readFile,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import path from "node:path";
 
 type TagAttribute = {
@@ -472,8 +479,14 @@ async function getFiles(dir: string) {
   return parsed;
 }
 
-export default async function compile(inputDir: string, outputDir: string) {
+export default async function compile(
+  inputDir: string,
+  outputDir: string,
+  doRm: boolean
+) {
   const parsed = await getFiles(inputDir);
+
+  if (doRm) await rm(path.join(outputDir), { recursive: true });
 
   let builtCount = 0;
   for (const file of Object.keys(parsed)) {
