@@ -486,19 +486,16 @@ export default async function compile(
 ) {
   const parsed = await getFiles(inputDir);
 
-  if (doRm) await rm(path.join(outputDir), { recursive: true });
+  if (doRm)
+    try {
+      await rm(path.join(outputDir), { recursive: true });
+    } catch {}
 
   let builtCount = 0;
   for (const file of Object.keys(parsed)) {
     if (file.split("/")[0] == "components") continue;
     let newParsed = handleImportTags(file, parsed[file]!, parsed, [file]);
-    newParsed = await handleEachTags(
-      file,
-      parsed[file]!,
-      parsed,
-      [file],
-      inputDir
-    );
+    newParsed = await handleEachTags(file, newParsed, parsed, [file], inputDir);
     const built = build(newParsed);
     const outputPath = path.join(outputDir, file);
     await mkdir(path.dirname(outputPath), { recursive: true });
