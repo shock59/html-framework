@@ -42,7 +42,7 @@ switch (mode) {
     );
     break;
   case "help":
-    console.log(`Usage: npm run dev -- [MODE] [OPTIONS]
+    console.log(`Usage: npx @shock59/html-framework -- [MODE] [OPTIONS]
 
 compile    Compiles markup from the input directory into the output directory
   -i  --input   Set input directory (defaults to ./input)
