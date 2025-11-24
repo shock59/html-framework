@@ -68,6 +68,45 @@ function updateContents(
   return imported;
 }
 
+function handleRelativeSrcs(
+  originalFilename: string,
+  newFilename: string,
+  parsed: Parsed
+) {
+  for (const [index, element] of parsed.entries()) {
+    if (!isTag(element)) continue;
+    const attributeIndex = element.attributes.findIndex(
+      (attribute) => attribute.name
+    );
+
+    element.children = handleRelativeSrcs(
+      originalFilename,
+      newFilename,
+      element.children
+    );
+
+    if (attributeIndex == -1) continue;
+
+    const value = element.attributes[attributeIndex]!.value!;
+    if (/^(\/)|(http:\/\/)|(https:\/\/)|(data:)/i.test(value)) continue;
+
+    const newValue = path.join(
+      path.dirname(newFilename),
+      path.join(path.dirname(originalFilename), value)
+    );
+    let newElement = element;
+    newElement.attributes[attributeIndex]!.value = newValue;
+
+    parsed = [
+      ...parsed.slice(0, index),
+      newElement,
+      ...parsed.slice(index + 1, parsed.length),
+    ];
+  }
+
+  return parsed;
+}
+
 function handleImportTags(
   filename: string,
   parsed: Parsed,
@@ -97,6 +136,7 @@ function handleImportTags(
         allFiles,
         [...alreadyImported, importedPath]
       );
+      imported = handleRelativeSrcs(filename, importedPath, imported);
 
       parsed = [
         ...parsed.slice(0, index),
@@ -149,13 +189,14 @@ async function handleEachTags(
       );
       let newElements: Parsed = [];
       for (const filename of files) {
-        const newElement: Parsed = updateContents(
+        let newElement: Parsed = updateContents(
           filename,
           allFiles[filename]!,
           element.children,
           allFiles,
           [...alreadyImported, filename]
         );
+        newElement = handleRelativeSrcs(filename, importedPath, newElement);
         newElements.push(...newElement);
       }
 
