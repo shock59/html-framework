@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "tsx src/index.ts"
+    "dev": "tsx src/index.ts",
+    "build": "tsc"
   },
   "type": "module",
   "devDependencies": {
