@@ -2,7 +2,7 @@
 
 A simple "framework" to add additional functionality to HTML. It includes a tool to compile your markup which uses custom components into vanilla HTML to deploy onto any web server, as well as a development server which automatically compiles files when updated for convenience.
 
-Currently, the only additional feature added is the `<import>` tag, which allows you to "import" HTML code from another file. For example, this code:
+Currently, the additional features added are the `<import>` and `<each>` tags. The `<import>` tag allows you to "import" HTML code from another file. For example, this code:
 
 ```html
 <!-- components/navbar.html -->
@@ -72,11 +72,40 @@ Using imports allows you to stop repeating yourself in every HTML file. You can 
 </import>
 ```
 
+The `<each>` tag works similarly, however instead of just importing one HTML file it imports every file in a directory. This can be useful if, for example, you have a blog with multiple posts and you want to display them all on one page:
+
+```html
+<!--- articles/article1.html --->
+<h1>First article</h1>
+<p>First article content</p>
+```
+
+```html
+<!--- articles/article2.html --->
+<h1>Second article</h1>
+<p>Second article content</p>
+```
+
+```html
+<!--- articles/article3.html --->
+<each src="articles" />
+```
+
+This will compile to:
+```html
+<h1>First article</h1>
+<p>First article content</p>
+<h1>Second article</h1>
+<p>Second article content</p>
+```
+
+I hope to add more features to this framework in the future. If you have any suggestions, feel free to contact me using the details found on [samv.me](https://samv.me).
+
 ## Usage
 
 Clone the repository by running `git clone https://github.com/shock59/html-framework` and cd into the directory. Run `npm install` to install the required dependencies.
 
-Create an `input` and an `output` directory and put your HTML files which use features from the framework (i.e. `<import>` tags) into the `input` directory. Note that any files inside `input/components` will not be included in the final compiled version (but can still be imported into other files that will be compiled), so it is recommended to put files which will only be used for imports (such as a navigation bar or page layouts) into this directory.
+Create an `input` and an `output` directory and put your HTML files which use features from the framework (i.e. `<import>` and `<each>` tags) into the `input` directory. Note that any files inside `input/components` will not be included in the final compiled version (but can still be imported into other files that will be compiled), so it is recommended to put files which will only be used for imports (such as a navigation bar or page layouts) into this directory.
 
 To run the live server, run `npm run dev -- serve`. This will start the live server on port 3000, serving files from the `input` directory.
 
