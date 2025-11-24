@@ -78,6 +78,6 @@ Clone the repository by running `git clone https://github.com/shock59/html-frame
 
 Create an `input` and an `output` directory and put your HTML files which use features from the framework (i.e. `<import>` tags) into the `input` directory. Note that any files inside `input/components` will not be included in the final compiled version (but can still be imported into other files that will be compiled), so it is recommended to put files which will only be used for imports (such as a navigation bar or page layouts) into this directory.
 
-To run the live server, run `npm run server`. This will start the live server on port 3000, serving files from the `input` directory.
+To run the live server, run `npm run dev -- serve`. This will start the live server on port 3000, serving files from the `input` directory.
 
-To compile your files without using the live server, run `npm run compile`. This will compile all files in the `input` directory into the `output` directory.
+To compile your files without using the live server, run `npm run dev -- compile`. This will compile all files in the `input` directory into the `output` directory.
