@@ -16,6 +16,9 @@ watch(inputDir, { recursive: true }, async (evt, name) => {
   console.log(`${name} updated, recompiled HTML`);
 });
 
+console.log(`Compiling to ${outputDir}`);
+await compile(inputDir, outputDir);
+
 app.listen(port, () => {
   console.clear();
   console.log(`Server running at http://127.0.0.1:${port}`);
