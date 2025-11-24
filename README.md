@@ -103,10 +103,12 @@ I hope to add more features to this framework in the future. If you have any sug
 
 ## Usage
 
-Clone the repository by running `git clone https://github.com/shock59/html-framework` and cd into the directory. Run `npm install` to install the required dependencies.
+You will need Node.js installed on your development computer to use this tool, even though you don't need it on the web server you will eventually deploy to. To install the tool, run `npm install @shock59/html-framework --global`.
 
-Create an `input` and an `output` directory and put your HTML files which use features from the framework (i.e. `<import>` and `<each>` tags) into the `input` directory. Note that any files inside `input/components` will not be included in the final compiled version (but can still be imported into other files that will be compiled), so it is recommended to put files which will only be used for imports (such as a navigation bar or page layouts) into this directory.
+Create an `input` and an `output` directory (you can alternatively use different names but will have to specify them manually) and put your HTML files which use features from the framework (i.e. `<import>` and `<each>` tags) into the `input` directory. Note that any files inside `input/components` will not be included in the final compiled version (but can still be imported into other files that will be compiled), so it is recommended to put files which will only be used for imports (such as a navigation bar or page layouts) into this directory.
 
-To run the live server, run `npm run dev -- serve`. This will start the live server on port 3000, serving files from the `input` directory.
+To run the live server, run `html-framework serve`. This will start the live server on port 3000, serving files from the `input` directory. To compile your files without using the live server, run `html-framework compile`. This will compile all files in the `input` directory into the `output` directory. To learn about more options, such as specifying custom input and output directories, run `html-framework help`.
 
-To compile your files without using the live server, run `npm run dev -- compile`. This will compile all files in the `input` directory into the `output` directory.
+### Using from source
+
+Instead of using npm you can alternatively use the project from source. Clone the repository by running `git clone https://github.com/shock59/html-framework` and cd into the directory. Run `npm install` to install the required dependencies. Then instead of running `html-framework`, run `npm run dev --`
