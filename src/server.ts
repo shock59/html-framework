@@ -1,24 +1,24 @@
 import express from "express";
 import { watch } from "fs";
 import compile from "./compile.js";
+import getDirectories from "./getDirectories.js";
 
 const app = express();
 const port = 3000;
 
-const inputDir = "input";
-const outputDir = "output";
+const directories = getDirectories();
 
-app.use(express.static(outputDir));
+app.use(express.static(directories.output));
 
-watch(inputDir, { recursive: true }, async (evt, name) => {
+watch(directories.input, { recursive: true }, async (evt, name) => {
   console.log(`${name} updated, compiling...`);
-  await compile(inputDir, outputDir);
+  await compile(directories.input, directories.output);
   console.clear();
   console.log(`${name} updated, recompiled HTML`);
 });
 
-console.log(`Compiling to ${outputDir}`);
-await compile(inputDir, outputDir);
+console.log(`Compiling to ${directories.output}`);
+await compile(directories.input, directories.output);
 
 app.listen(port, () => {
   console.clear();

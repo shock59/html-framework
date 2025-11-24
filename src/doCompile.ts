@@ -1,3 +1,4 @@
 import compile from "./compile.js";
-
-await compile("input", "output");
+import getDirectories from "./getDirectories.js";
+const directories = getDirectories();
+await compile(directories.input, directories.output);
