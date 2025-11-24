@@ -1,0 +1,201 @@
+<import src="components/view.html">
+  <h1>HTML Framework</h1>
+
+  <p>
+    A simple "framework" to add additional functionality to HTML. It includes a
+    tool to compile your markup which uses custom components into vanilla HTML
+    to deploy onto any web server, as well as a development server which
+    automatically compiles files when updated for convenience. The HTML
+    framework can be used to help build all sorts of static websites, such as
+    this one!
+  </p>
+
+  <p>
+    Warning: This tool is still a work in progress and so bugs may occasionally
+    occur. It is recommended to check the output of the tool before you deploy any
+    websites made using it.
+  </p>
+
+  <p>
+    Currently, the additional features added are the &lt;import&gt; and
+    &lt;each&gt; tags. The &lt;import&gt; tag allows you to "import" HTML
+    code from another file. For example, this code:
+  </p>
+
+  <p><div class="codeblock">
+    <pre>
+&lt;!-- components/navbar.html --&gt;
+&lt;nav&gt;
+&nbsp;&nbsp;&lt;a href=&quot;index.html&quot;&gt;Home&lt;/a&gt;
+&nbsp;&nbsp;&lt;a href=&quot;contact.html&quot;&gt;Contact&lt;/a&gt;
+&lt;/nav&gt;</pre
+    >
+  </div></p>
+
+  <p><div class="codeblock">
+    <pre>
+&lt;!-- index.html --&gt;
+&lt;import src=&quot;components/navbar.html&quot; /&gt;
+
+&lt;h1&gt;Home page&lt;/h1&gt;</pre
+    >
+  </div></p>
+
+  <p><div class="codeblock">
+    <pre>
+&lt;!-- contact.html --&gt;
+&lt;import src=&quot;components/navbar.html&quot; /&gt;
+
+&lt;h1&gt;Contact page&lt;/h1&gt;</pre
+    >
+  </div></p>
+
+  <p>Will compile to this:</p>
+
+  <p><div class="codeblock">
+    <pre>
+&lt;!-- index.html --&gt;
+&lt;nav&gt;
+&nbsp;&nbsp;&lt;a href=&quot;index.html&quot;&gt;Home&lt;/a&gt;
+&nbsp;&nbsp;&lt;a href=&quot;contact.html&quot;&gt;Contact&lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;h1&gt;Home page&lt;/h1&gt;</pre
+    >
+  </div></p>
+
+  <p><div class="codeblock">
+    <pre>
+&lt;!-- contact.html --&gt;
+&lt;nav&gt;
+&nbsp;&nbsp;&lt;a href=&quot;index.html&quot;&gt;Home&lt;/a&gt;
+&nbsp;&nbsp;&lt;a href=&quot;contact.html&quot;&gt;Contact&lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;h1&gt;Contact page&lt;/h1&gt;</pre
+    >
+  </div></p>
+
+  <p>
+    Using imports allows you to stop repeating yourself in every HTML file.
+    You can also specify a place to put custom content inside of an import so
+    it can be used for page layouts, for example:
+  </p>
+
+  <p><div class="codeblock">
+    <pre>
+&lt;!-- components/layout.html --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&nbsp;&nbsp;&lt;title&gt;My Website&lt;/title&gt;
+&nbsp;&nbsp;&lt;link rel=&quot;stylesheet&quot; href=&quot;style.css&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&nbsp;&nbsp;&lt;contents&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</pre
+    >
+  </div></p>
+
+  <p><div class="codeblock">
+    <pre>
+&lt;!-- page.html --&gt;
+&lt;import src=&quot;components/layout.html&quot;&gt;
+&nbsp;&nbsp;&lt;p&gt;Page content&lt;/p&gt;
+&lt;/import&gt;</pre
+    >
+  </div></p>
+
+  <br>
+
+  <p>
+    The &lt;each&gt; tag works similarly, however instead of just importing one HTML file it imports
+    every file in a directory. This can be useful if, for example, you have a blog with multiple
+    posts and you want to display them all on one page:
+  </p>
+
+  <p><div class="codeblock">
+    <pre>
+&lt;!--- articles/article1.html ---&gt;
+&lt;h1&gt;First article&lt;/h1&gt;
+&lt;p&gt;First article content&lt;/p&gt;</pre
+    >
+  </div></p>
+
+  <p><div class="codeblock">
+    <pre>
+&lt;!--- articles/article2.html ---&gt;
+&lt;h1&gt;Second article&lt;/h1&gt;
+&lt;p&gt;Second article content&lt;/p&gt;</pre
+    >
+  </div></p>
+
+  <p><div class="codeblock">
+    <pre>
+&lt;!--- blog.html ---&gt;
+&lt;each src="articles" /&gt;</pre
+    >
+  </div></p>
+
+  <p>This will compile to:</p>
+
+    <p><div class="codeblock">
+    <pre>
+&lt;!--- blog.html ---&gt;
+&lt;h1&gt;First article&lt;/h1&gt;
+&lt;p&gt;First article content&lt;/p&gt;
+&lt;h1&gt;Second article&lt;/h1&gt;
+&lt;p&gt;Second article content&lt;/p&gt;</pre
+    >
+  </div></p>
+
+  <br>
+
+  <p>
+  I hope to add more features to this framework in the future.
+  If you have any suggestions, feel free to contact me using the details found on
+  <a href="https://samv.me" target="_blank">samv.me</a>.</p>
+
+  <br>
+
+  <h2>Usage</h2>
+
+  <p>
+    You will need Node.js installed on your development computer to use this tool,
+    even though you don't need it on the web server you will eventually deploy to.
+    To install the tool, run <code>npm install @shock59/html-framework --global</code>.
+  </p>
+
+  <p>
+    Create an <code>input</code> and an <code>output</code> directory (you can alternatively use different
+    names but will have to specify them manually) and put your HTML files which use features
+    from the framework (i.e. &lt;import&gt; and &lt;each&gt; tags) into the <code>input</code> directory. Note
+    that any files inside <code>input/components</code> will not be included in the final compiled
+    version (but can still be imported into other files that will be compiled), so it is 
+    recommended to put files which will only be used for imports (such as a navigation bar
+    or page layouts) into this directory.
+  </p>
+
+  <p>
+    To run the live server, run <code>html-framework serve</code>. This will start the live server on port 3000, serving
+    files from the <code>input</code> directory. To compile your files without using the live server, run <code>html-framework
+    compile</code>. This will compile all files in the <code>input</code> directory into the <code>output</code> directory. To learn about
+    more options, such as specifying custom input and output directories, run <code>html-framework help</code>.
+  </p>
+
+  <h3>Using from source</h3>
+
+  <p>
+    Instead of using npm you can alternatively use the project from source. Clone the repository by running
+    <code>git clone https://github.com/shock59/html-framework</code> and cd into the directory. Run <code>npm install</code> to install the
+    required dependencies. Then instead of running <code>html-framework</code>, run <code>npm run dev --</code>.</p>
+
+  <br>
+
+  <p>You can find the source code for this project on <a href="https://github.com/shock59/html-framework" target="_blank">GitHub</a>.</p>
+
+  <br><br><br><br>
+</import>
