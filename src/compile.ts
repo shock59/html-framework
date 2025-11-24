@@ -82,12 +82,11 @@ function handleImportTags(
       );
       if (!src) continue;
       const value = src.value!;
-      if (alreadyImported.includes(value)) {
-        continue;
-      }
-
       const importedPath =
         value[0] == "/" ? value : path.join(path.dirname(filename), value);
+      if (alreadyImported.includes(importedPath)) {
+        continue;
+      }
       let imported = allFiles[importedPath];
       if (!imported) continue;
 
@@ -96,14 +95,14 @@ function handleImportTags(
         imported,
         element.children,
         allFiles,
-        [...alreadyImported, value]
+        [...alreadyImported, importedPath]
       );
 
       parsed = [
         ...parsed.slice(0, index),
         ...handleImportTags(importedPath, imported, allFiles, [
           ...alreadyImported,
-          value,
+          importedPath,
         ]),
         ...parsed.slice(index + 1, parsed.length),
       ];
