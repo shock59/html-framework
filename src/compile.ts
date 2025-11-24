@@ -38,6 +38,7 @@ function isTag(input: unknown): input is Tag {
 }
 
 function updateContents(
+  filename: string,
   imported: Parsed,
   newContents: Parsed,
   allFiles: Record<string, Parsed>,
@@ -48,11 +49,14 @@ function updateContents(
     if (element.name == "contents") {
       imported = [
         ...imported.slice(0, index),
-        ...handleImportTags(newContents, allFiles, [...alreadyImported]),
+        ...handleImportTags(filename, newContents, allFiles, [
+          ...alreadyImported,
+        ]),
         ...imported.slice(index + 1, imported.length),
       ];
     } else {
       element.children = updateContents(
+        filename,
         element.children,
         newContents,
         allFiles,
@@ -65,6 +69,7 @@ function updateContents(
 }
 
 function handleImportTags(
+  filename: string,
   parsed: Parsed,
   allFiles: Record<string, Parsed>,
   alreadyImported: string[]
@@ -81,21 +86,30 @@ function handleImportTags(
         continue;
       }
 
-      let imported = allFiles[value];
+      const importedPath =
+        value[0] == "/" ? value : path.join(path.dirname(filename), value);
+      let imported = allFiles[importedPath];
       if (!imported) continue;
 
-      imported = updateContents(imported, element.children, allFiles, [
-        ...alreadyImported,
-        value,
-      ]);
+      imported = updateContents(
+        filename,
+        imported,
+        element.children,
+        allFiles,
+        [...alreadyImported, value]
+      );
 
       parsed = [
         ...parsed.slice(0, index),
-        ...handleImportTags(imported, allFiles, [...alreadyImported, value]),
+        ...handleImportTags(importedPath, imported, allFiles, [
+          ...alreadyImported,
+          value,
+        ]),
         ...parsed.slice(index + 1, parsed.length),
       ];
     } else {
       element.children = handleImportTags(
+        filename,
         element.children,
         allFiles,
         alreadyImported
@@ -364,7 +378,7 @@ export default async function compile(inputDir: string, outputDir: string) {
 
   for (const file of Object.keys(parsed)) {
     if (file.split("/")[0] == "components") continue;
-    const newParsed = handleImportTags(parsed[file]!, parsed, [file]);
+    const newParsed = handleImportTags(file, parsed[file]!, parsed, [file]);
     const built = build(newParsed);
     const outputPath = path.join(outputDir, file);
     await mkdir(path.dirname(outputPath), { recursive: true });
