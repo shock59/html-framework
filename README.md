@@ -2,6 +2,9 @@
 
 A simple "framework" to add additional functionality to HTML. It includes a tool to compile your markup which uses custom components into vanilla HTML to deploy onto any web server, as well as a development server which automatically compiles files when updated for convenience.
 
+> [!WARNING]
+> This tool is still a work in progress and so bugs may occasionally occur. It is recommended to check the output of the tool before you deploy any websites made using it.
+
 Currently, the additional features added are the `<import>` and `<each>` tags. The `<import>` tag allows you to "import" HTML code from another file. For example, this code:
 
 ```html
@@ -87,12 +90,13 @@ The `<each>` tag works similarly, however instead of just importing one HTML fil
 ```
 
 ```html
-<!--- articles/article3.html --->
+<!--- articles/blog.html --->
 <each src="articles" />
 ```
 
 This will compile to:
 ```html
+<!--- articles/blog.html --->
 <h1>First article</h1>
 <p>First article content</p>
 <h1>Second article</h1>
@@ -111,4 +115,4 @@ To run the live server, run `html-framework serve`. This will start the live ser
 
 ### Using from source
 
-Instead of using npm you can alternatively use the project from source. Clone the repository by running `git clone https://github.com/shock59/html-framework` and cd into the directory. Run `npm install` to install the required dependencies. Then instead of running `html-framework`, run `npm run dev --`
+Instead of using npm you can alternatively use the project from source. Clone the repository by running `git clone https://github.com/shock59/html-framework` and cd into the directory. Run `npm install` to install the required dependencies. Then instead of running `html-framework`, run `npm run dev --`.
