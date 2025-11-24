@@ -395,6 +395,7 @@ function parse(html: string) {
         continue;
       }
 
+      let newTags = 0;
       // Find the closing tag
       while (true) {
         index++;
@@ -415,9 +416,19 @@ function parse(html: string) {
           return parsed;
         }
         if (
+          [`<${tagName} `, `<${tagName}>`].includes(
+            html.substring(index, index + tagName.length + 2)
+          )
+        ) {
+          newTags++;
+        }
+
+        if (
           html.substring(index, index + tagName.length + 3) == `</${tagName}>`
-        )
-          break;
+        ) {
+          if (newTags == 0) break;
+          newTags--;
+        }
       }
       const closingTagIndex = index;
 
