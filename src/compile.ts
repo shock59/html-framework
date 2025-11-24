@@ -475,6 +475,7 @@ async function getFiles(dir: string) {
 export default async function compile(inputDir: string, outputDir: string) {
   const parsed = await getFiles(inputDir);
 
+  let builtCount = 0;
   for (const file of Object.keys(parsed)) {
     if (file.split("/")[0] == "components") continue;
     let newParsed = handleImportTags(file, parsed[file]!, parsed, [file]);
@@ -489,5 +490,8 @@ export default async function compile(inputDir: string, outputDir: string) {
     const outputPath = path.join(outputDir, file);
     await mkdir(path.dirname(outputPath), { recursive: true });
     await writeFile(outputPath, built);
+    builtCount++;
   }
+
+  console.log(`Built ${builtCount}/${Object.keys(parsed).length} files`);
 }
