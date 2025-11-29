@@ -2,6 +2,10 @@
 
 A simple "framework" to add additional functionality to HTML. It includes a tool to compile your markup which uses custom components into vanilla HTML to deploy onto any web server, as well as a development server which automatically compiles files when updated for convenience.
 
+Demo video:
+
+<video src="demo.mp4" width="640" height="360" controls></video>
+
 > [!WARNING]
 > This tool is still a work in progress and so bugs may occasionally occur. It is recommended to check the output of the tool before you deploy any websites made using it.
 
