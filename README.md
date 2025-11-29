@@ -4,7 +4,7 @@ A simple "framework" to add additional functionality to HTML. It includes a tool
 
 Demo video:
 
-<video src="demo.mp4" width="640" height="360" controls></video>
+<video src="https://github.com/shock59/html-framework/raw/refs/heads/main/demo.mp4" width="640" height="360" controls></video>
 
 > [!WARNING]
 > This tool is still a work in progress and so bugs may occasionally occur. It is recommended to check the output of the tool before you deploy any websites made using it.
